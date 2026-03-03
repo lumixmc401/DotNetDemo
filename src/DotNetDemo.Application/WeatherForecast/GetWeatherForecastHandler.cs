@@ -21,6 +21,6 @@ public class GetWeatherForecastHandler : IQueryHandler<GetWeatherForecastQuery, 
             ))
             .ToArray();
 
-        return Task.FromResult(forecast);
+        return Task.FromResult<IEnumerable<WeatherForecastDto>>(forecast);
     }
 }
