@@ -18,7 +18,8 @@ public class GetWeatherForecastHandler : IQueryHandler<GetWeatherForecastQuery, 
                 DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 Random.Shared.Next(-20, 55),
                 Summaries[Random.Shared.Next(Summaries.Length)]
-            ));
+            ))
+            .ToArray();
 
         return Task.FromResult(forecast);
     }
