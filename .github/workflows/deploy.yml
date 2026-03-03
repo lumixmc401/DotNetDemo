@@ -1,0 +1,42 @@
+name: Deploy to Azure AKS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Build project
+      run: dotnet build --configuration Release
+    
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build
+    
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }} .
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Push to Azure Container Registry
+      run: |
+        az acr login --name ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}
+        docker push ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }}
+    
+    - name: Deploy to AKS
+      run: |
+        az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
+        kubectl set image deployment/dotnetdemo dotnetdemo=${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }} -n default
