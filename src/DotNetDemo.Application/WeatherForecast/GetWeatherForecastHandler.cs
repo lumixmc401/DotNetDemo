@@ -1,15 +1,17 @@
-using MediatR;
+using DotNetDemo.Application.Abstractions;
 
-namespace DotNetDemo.Api.Features.WeatherForecast;
+namespace DotNetDemo.Application.WeatherForecast;
 
-public class GetWeatherForecastHandler : IRequestHandler<GetWeatherForecastQuery, IEnumerable<WeatherForecastDto>>
+public class GetWeatherForecastHandler : IQueryHandler<GetWeatherForecastQuery, IEnumerable<WeatherForecastDto>>
 {
     private static readonly string[] Summaries =
     [
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     ];
 
-    public Task<IEnumerable<WeatherForecastDto>> Handle(GetWeatherForecastQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<WeatherForecastDto>> HandleAsync(
+        GetWeatherForecastQuery query,
+        CancellationToken cancellationToken = default)
     {
         var forecast = Enumerable.Range(1, 5).Select(index =>
             new WeatherForecastDto(

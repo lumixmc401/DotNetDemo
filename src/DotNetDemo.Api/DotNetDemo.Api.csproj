@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   </ItemGroup>
 
-</Project>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetDemo.Application\DotNetDemo.Application.csproj" />
+    <ProjectReference Include="..\DotNetDemo.Infrastructure\DotNetDemo.Infrastructure.csproj" />
+  </ItemGroup>
 
+</Project>

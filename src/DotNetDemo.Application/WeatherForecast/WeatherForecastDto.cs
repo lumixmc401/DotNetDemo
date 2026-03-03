@@ -1,8 +1,4 @@
-using MediatR;
-
-namespace DotNetDemo.Api.Features.WeatherForecast;
-
-public record GetWeatherForecastQuery : IRequest<IEnumerable<WeatherForecastDto>>;
+namespace DotNetDemo.Application.WeatherForecast;
 
 public record WeatherForecastDto(DateOnly Date, int TemperatureC, string? Summary)
 {

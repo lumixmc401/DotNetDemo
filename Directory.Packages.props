@@ -1,7 +1,6 @@
 <Project>
   <ItemGroup>
     <!-- API dependencies -->
-    <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
 
     <!-- Test dependencies -->

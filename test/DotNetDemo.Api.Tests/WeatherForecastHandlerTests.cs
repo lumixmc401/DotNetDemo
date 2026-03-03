@@ -1,4 +1,4 @@
-﻿using DotNetDemo.Api.Features.WeatherForecast;
+﻿using DotNetDemo.Application.WeatherForecast;
 
 namespace DotNetDemo.Api.Tests;
 
@@ -9,7 +9,7 @@ public class WeatherForecastHandlerTests
     {
         var handler = new GetWeatherForecastHandler();
 
-        var result = await handler.Handle(new GetWeatherForecastQuery(), CancellationToken.None);
+        var result = await handler.HandleAsync(new GetWeatherForecastQuery(), CancellationToken.None);
 
         Assert.NotNull(result);
         Assert.Equal(5, result.Count());
@@ -21,7 +21,7 @@ public class WeatherForecastHandlerTests
         var handler = new GetWeatherForecastHandler();
         var today = DateOnly.FromDateTime(DateTime.Now);
 
-        var result = await handler.Handle(new GetWeatherForecastQuery(), CancellationToken.None);
+        var result = await handler.HandleAsync(new GetWeatherForecastQuery(), CancellationToken.None);
 
         Assert.All(result, f => Assert.True(f.Date > today));
     }
