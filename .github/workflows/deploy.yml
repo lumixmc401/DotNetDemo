@@ -34,16 +34,12 @@ jobs:
         LOGIN_SERVER=$(az acr show --name ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }} --query loginServer --output tsv)
         echo "login_server=$LOGIN_SERVER" >> $GITHUB_OUTPUT
     
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Build Docker image
-      run: docker buildx build --platform linux/amd64 --load -t ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} .
-    
-    - name: Push to Azure Container Registry
+    - name: Build and Push to ACR using az acr build
       run: |
-        az acr login --name ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}
-        docker push ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }}
+        az acr build --registry ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }} \
+          --image dotnetdemo:${{ github.sha }} \
+          --platform linux/amd64 \
+          --file Dockerfile .
     
     - name: Deploy to AKS
       run: |
