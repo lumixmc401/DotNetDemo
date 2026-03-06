@@ -1,6 +1,7 @@
 using DotNetDemo.Api.WeatherForecast;
 using DotNetDemo.Application.WeatherForecast;
 using DotNetDemo.Infrastructure.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
