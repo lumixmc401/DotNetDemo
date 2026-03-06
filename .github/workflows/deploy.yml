@@ -44,5 +44,8 @@ jobs:
     
     - name: Deploy to AKS
       run: |
-        az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
-        kubectl set image deployment/dotnetdemo dotnetdemo=${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} -n default
+        RESOURCE_GROUP="${{ secrets.AZURE_RESOURCE_GROUP }}"
+        AKS_CLUSTER="${{ secrets.AZURE_AKS_CLUSTER_NAME }}"
+        IMAGE="${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }}"
+        az aks get-credentials --resource-group "$RESOURCE_GROUP" --name "$AKS_CLUSTER"
+        kubectl set image deployment/dotnetdemo dotnetdemo="$IMAGE" -n default
