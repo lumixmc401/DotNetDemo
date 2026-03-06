@@ -30,11 +30,7 @@ builder.Services.AddInfrastructure(typeof(GetWeatherForecastHandler).Assembly);
 var app = builder.Build();
 
 app.MapOpenApi();
-app.MapScalarApiReference(options =>
-{
-    options.WithTitle("DotNet Demo API")
-           .WithTheme(Scalar.AspNetCore.ScalarTheme.Moon);
-});
+app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 app.MapHealthChecks("/health");
