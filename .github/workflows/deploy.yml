@@ -47,5 +47,19 @@ jobs:
         RESOURCE_GROUP="${{ secrets.AZURE_RESOURCE_GROUP }}"
         AKS_CLUSTER="${{ secrets.AZURE_AKS_CLUSTER_NAME }}"
         IMAGE="${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }}"
+        
+        # Get AKS credentials
         az aks get-credentials --resource-group "$RESOURCE_GROUP" --name "$AKS_CLUSTER"
-        kubectl set image deployment/dotnetdemo dotnetdemo="$IMAGE" -n default
+        
+        # Check if deployment exists
+        if kubectl get deployment dotnetdemo -n default &> /dev/null; then
+          echo "Deployment exists, updating image..."
+          kubectl set image deployment/dotnetdemo dotnetdemo="$IMAGE" -n default
+        else
+          echo "Deployment does not exist, creating from k8s manifests..."
+          # Update the image in deployment.yaml before applying
+          sed "s|image: dotnetdemo:latest|image: $IMAGE|g" k8s/deployment.yaml | kubectl apply -f -
+        fi
+        
+        # Wait for rollout to complete
+        kubectl rollout status deployment/dotnetdemo -n default
