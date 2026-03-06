@@ -23,20 +23,26 @@ jobs:
     - name: Run tests
       run: dotnet test --configuration Release --no-build
     
-    - name: Build Docker image
-      run: docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }} .
-    
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
+    - name: Get ACR Login Server
+      id: acr
+      run: |
+        LOGIN_SERVER=$(az acr show --name ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }} --query loginServer --output tsv)
+        echo "login_server=$LOGIN_SERVER" >> $GITHUB_OUTPUT
+    
+    - name: Build Docker image
+      run: docker build -t ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} .
+    
     - name: Push to Azure Container Registry
       run: |
         az acr login --name ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}
-        docker push ${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }}
+        docker push ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }}
     
     - name: Deploy to AKS
       run: |
         az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
-        kubectl set image deployment/dotnetdemo dotnetdemo=${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/dotnetdemo:${{ github.sha }} -n default
+        kubectl set image deployment/dotnetdemo dotnetdemo=${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} -n default
