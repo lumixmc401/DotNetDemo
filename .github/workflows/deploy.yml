@@ -35,7 +35,7 @@ jobs:
         echo "login_server=$LOGIN_SERVER" >> $GITHUB_OUTPUT
     
     - name: Build Docker image
-      run: docker build -t ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} .
+      run: docker build --platform linux/amd64 -t ${{ steps.acr.outputs.login_server }}/dotnetdemo:${{ github.sha }} .
     
     - name: Push to Azure Container Registry
       run: |
